@@ -105,6 +105,19 @@ def update_task(task_id):
     return jsonify({"message": "Task updated successfully"}), 200
 
 
+# Удаление задачи
+@app.route('/tasks/<int:task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM tasks WHERE id = %s", (task_id,))
+    db.commit()
+
+    if cursor.rowcount == 0:
+        return jsonify({"error": "Task not found"}), 404
+
+    return jsonify({"message": "Task deleted successfully"}), 200
+
+
 @app.route('/')
 def home():
     return "Hello world!"
