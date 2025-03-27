@@ -57,6 +57,26 @@ def add_task():
     # Возвращаем успешный ответ
     return jsonify({"message": "Task added successfully"}), 201
 
+# Получение конкретной задачи
+@app.route('/tasks/<int:task_id>', methods=['GET'])
+def get_task(task_id):
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM tasks WHERE id = %s", (task_id,))
+    task = cursor.fetchone()
+
+    if not task:
+        return jsonify({"error": "Task not found"}), 404
+
+    # Преобразуем дату в строку
+    if isinstance(task['due_date'], date):
+        task['due_date'] = task['due_date'].strftime('%Y-%m-%d')
+
+    response = json.dumps(task, ensure_ascii=False)
+    
+    # Возвращаем результат
+    return response, 200
+
+
 @app.route('/')
 def home():
     return "Hello world!"
