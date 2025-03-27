@@ -32,6 +32,31 @@ def get_tasks():
     # Возвращаем результат
     return response, 200
 
+# Добавление задачи
+@app.route('/tasks', methods=['POST'])
+def add_task():
+    data = request.get_json()  # Получаем данные из тела запроса
+    
+    title = data.get('title')
+    description = data.get('description')
+    due_date = data.get('due_date')
+    priority = data.get('priority', 'Средний')  # По умолчанию "Средний"
+    status = data.get('status', 'Новая')  # По умолчанию "Новая"
+    
+    if not title:
+        return jsonify({"error": "Title is required"}), 400
+    
+    # Вставка новой задачи в базу данных
+    cursor.execute("""
+        INSERT INTO tasks (title, description, due_date, priority, status)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (title, description, due_date, priority, status))
+    
+    db.commit()
+    
+    # Возвращаем успешный ответ
+    return jsonify({"message": "Task added successfully"}), 201
+
 @app.route('/')
 def home():
     return "Hello world!"
