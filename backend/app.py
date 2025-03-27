@@ -76,6 +76,34 @@ def get_task(task_id):
     # Возвращаем результат
     return response, 200
 
+# Обновление задачи
+@app.route('/tasks/<int:task_id>', methods=['PUT'])
+def update_task(task_id):
+    data = request.get_json()
+    
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM tasks WHERE id = %s", (task_id,))
+    task = cursor.fetchone()
+    
+    if not task:
+        return jsonify({"error": "Task not found"}), 404
+
+    title = data.get('title', task['title'])
+    description = data.get('description', task['description'])
+    due_date = data.get('due_date', task['due_date'])
+    priority = data.get('priority', task['priority'])
+    status = data.get('status', task['status'])
+
+    cursor.execute("""
+        UPDATE tasks 
+        SET title = %s, description = %s, due_date = %s, priority = %s, status = %s
+        WHERE id = %s
+    """, (title, description, due_date, priority, status, task_id))
+
+    db.commit()
+
+    return jsonify({"message": "Task updated successfully"}), 200
+
 
 @app.route('/')
 def home():
