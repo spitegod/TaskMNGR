@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 import mysql.connector
+import json
+from datetime import date  # Импортируем date
 
 app = Flask(__name__)
 
@@ -13,35 +15,27 @@ db = mysql.connector.connect(
 cursor = db.cursor()
 
 # Получение всех задач
-@app.route('/tasks', methods=['GET'])
+@app.route('/tasks')
 def get_tasks():
+    cursor = db.cursor(dictionary=True)
     cursor.execute("SELECT * FROM tasks")
     tasks = cursor.fetchall()
-    result = []
+    
+    # Преобразуем дату в строку
     for task in tasks:
-        result.append({
-            "id": task[0],
-            "title": task[1],
-            "description": task[2],
-            "due_date": str(task[3]),
-            "priority": task[4],
-            "status": task[5]
-        })
-    return jsonify(result)
+        if isinstance(task['due_date'], date):
+            task['due_date'] = task['due_date'].strftime('%Y-%m-%d')
+    
+    # Сериализуем задачи в JSON с параметром ensure_ascii=False
+    response = json.dumps(tasks, ensure_ascii=False)
+    
+    # Возвращаем результат
+    return response, 200
 
 @app.route('/')
 def home():
     return "Hello world!"
 
-# Добавление новой задачи
-@app.route('/tasks', methods=['POST'])
-def add_task():
-    data = request.json
-    sql = "INSERT INTO tasks (title, description, due_date, priority, status) VALUES (%s, %s, %s, %s, %s)"
-    values = (data["title"], data["description"], data["due_date"], data["priority"], data["status"])
-    cursor.execute(sql, values)
-    db.commit()
-    return jsonify({"message": "Задача добавлена"}), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
