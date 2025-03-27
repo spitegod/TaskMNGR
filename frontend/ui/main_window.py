@@ -1,5 +1,7 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QWidget
 import sys
+from frontend.controllers.task_controller import TaskController
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -9,6 +11,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(100, 100, 600, 400)
 
         self.init_ui()
+        self.controller = TaskController(self)  # Подключаем контроллер
 
     def init_ui(self):
         central_widget = QWidget()
