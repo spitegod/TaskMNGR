@@ -25,8 +25,12 @@ class TaskDialogBase(QDialog):
         # Поле для даты
         self.date_label = QLabel("Дата:")
         self.date_input = QDateEdit()
-        self.date_input.setCalendarPopup(True)
-        self.date_input.setDate(QDate.currentDate())
+        self.date_input.setCalendarPopup(True)  # Добавляем выпадающий календарь
+        self.date_input.setDate(QDate.currentDate())  # Устанавливаем текущую дату
+
+        # Отключаем возможность редактирования вручную, но календарь доступен
+        self.date_input.setKeyboardTracking(False)  # Отключаем отслеживание ввода с клавиатуры
+
         self.layout.addWidget(self.date_label)
         self.layout.addWidget(self.date_input)
 

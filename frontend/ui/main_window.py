@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QWidget, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QWidget, QMessageBox, QAbstractItemView
 import sys
 from frontend.controllers.task_controller import TaskController
 
@@ -24,6 +24,14 @@ class MainWindow(QMainWindow):
         self.table.setColumnCount(5)
         self.table.setHorizontalHeaderLabels(["ID", "Название", "Описание", "Дата", "Приоритет"])
         layout.addWidget(self.table)
+        
+        # Разрешаем выделение только одной строки
+        self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
+        self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+
+        # Запрещаем редактирование ячеек
+        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+
 
         # Кнопки
         self.add_button = QPushButton("Добавить задачу")
@@ -40,6 +48,7 @@ class MainWindow(QMainWindow):
         self.delete_button.clicked.connect(self.delete_task)
 
         central_widget.setLayout(layout)
+
 
     def open_add_task_dialog(self):
         from frontend.ui.add_task_dialog import AddTaskDialog
@@ -73,7 +82,9 @@ class MainWindow(QMainWindow):
                                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         
         if confirm == QMessageBox.StandardButton.Yes:
-            self.controller.delete_task(task_id)    
+            self.controller.delete_task(task_id)
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
