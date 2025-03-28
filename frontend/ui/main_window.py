@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QWidget, QMessageBox
 import sys
 from frontend.controllers.task_controller import TaskController
 
@@ -32,8 +32,11 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.add_button)
         self.add_button.clicked.connect(self.open_add_task_dialog)
+
         layout.addWidget(self.edit_button)
+
         layout.addWidget(self.delete_button)
+        self.delete_button.clicked.connect(self.delete_task)
 
         central_widget.setLayout(layout)
 
@@ -41,6 +44,20 @@ class MainWindow(QMainWindow):
         from frontend.ui.add_task_dialog import AddTaskDialog
         dialog = AddTaskDialog(self)
         dialog.exec()
+
+    def delete_task(self):
+        selected_row = self.table.currentRow()
+        if selected_row == -1:
+            QMessageBox.warning(self, "Ошибка", "Выберите задачу для удаления.")
+            return
+        
+        task_id = self.table.item(selected_row, 0).text()
+        
+        confirm = QMessageBox.question(self, "Удаление", f"Удалить задачу #{task_id}?", 
+                                       QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        
+        if confirm == QMessageBox.StandardButton.Yes:
+            self.controller.delete_task(task_id)    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

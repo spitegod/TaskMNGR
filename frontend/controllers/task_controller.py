@@ -1,5 +1,5 @@
 from frontend.models.task_model import TaskModel
-from PyQt6.QtWidgets import QTableWidgetItem
+from PyQt6.QtWidgets import QTableWidgetItem, QMessageBox
 import requests
 
 
@@ -24,6 +24,15 @@ class TaskController:
         response = requests.post("http://127.0.0.1:5000/tasks", json=task_data)
         if response.status_code == 201:
             self.load_tasks()  # Перезагружаем список задач
+
+    def delete_task(self, task_id):
+        response = requests.delete(f"http://127.0.0.1:5000/tasks/{task_id}")
+
+        if response.status_code == 200:
+            QMessageBox.information(self.ui, "Успешно", "Задача удалена.")
+            self.load_tasks()  # Обновляем список задач
+        else:
+            QMessageBox.critical(self.ui, "Ошибка", "Не удалось удалить задачу.")
 
     @staticmethod
     def create_item(text):
