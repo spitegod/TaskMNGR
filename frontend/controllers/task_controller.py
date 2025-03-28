@@ -33,6 +33,24 @@ class TaskController:
             self.load_tasks()  # Обновляем список задач
         else:
             QMessageBox.critical(self.ui, "Ошибка", "Не удалось удалить задачу.")
+    
+    def get_task(self, task_id):
+        response = requests.get(f"http://127.0.0.1:5000/tasks/{task_id}")
+        
+        if response.status_code == 200:
+            return response.json()
+        return None
+
+
+    def update_task(self, task_id, task_data):
+        response = requests.put(f"http://127.0.0.1:5000/tasks/{task_id}", json=task_data)
+
+        if response.status_code == 200:
+            QMessageBox.information(self.ui, "Успешно", "Задача обновлена.")
+            self.load_tasks()  # Перезагружаем список задач
+        else:
+            QMessageBox.critical(self.ui, "Ошибка", "Не удалось обновить задачу.")
+  
 
     @staticmethod
     def create_item(text):

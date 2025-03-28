@@ -34,6 +34,7 @@ class MainWindow(QMainWindow):
         self.add_button.clicked.connect(self.open_add_task_dialog)
 
         layout.addWidget(self.edit_button)
+        self.edit_button.clicked.connect(self.open_edit_dialog)
 
         layout.addWidget(self.delete_button)
         self.delete_button.clicked.connect(self.delete_task)
@@ -44,6 +45,21 @@ class MainWindow(QMainWindow):
         from frontend.ui.add_task_dialog import AddTaskDialog
         dialog = AddTaskDialog(self)
         dialog.exec()
+
+    def open_edit_dialog(self):
+        from frontend.ui.edit_task_dialog import EditTaskDialog
+        selected_row = self.table.currentRow()
+        if selected_row == -1:
+            QMessageBox.warning(self, "Ошибка", "Выберите задачу для редактирования.")
+            return
+
+        # Получаем ID задачи
+        task_id = self.table.item(selected_row, 0).text()
+
+        # Открываем диалог редактирования
+        dialog = EditTaskDialog(task_id, self.controller)
+        if dialog.exec():
+            self.controller.load_tasks()  # Обновляем список после редактирования
 
     def delete_task(self):
         selected_row = self.table.currentRow()
