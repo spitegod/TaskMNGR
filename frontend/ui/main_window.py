@@ -31,10 +31,16 @@ class MainWindow(QMainWindow):
         self.delete_button = QPushButton("Удалить")
 
         layout.addWidget(self.add_button)
+        self.add_button.clicked.connect(self.open_add_task_dialog)
         layout.addWidget(self.edit_button)
         layout.addWidget(self.delete_button)
 
         central_widget.setLayout(layout)
+
+    def open_add_task_dialog(self):
+        from frontend.ui.add_task_dialog import AddTaskDialog
+        dialog = AddTaskDialog(self)
+        dialog.exec()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

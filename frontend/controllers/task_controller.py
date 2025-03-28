@@ -1,5 +1,6 @@
 from frontend.models.task_model import TaskModel
 from PyQt6.QtWidgets import QTableWidgetItem
+import requests
 
 
 class TaskController:
@@ -18,6 +19,11 @@ class TaskController:
             self.ui.table.setItem(row, 2, self.create_item(task["description"]))
             self.ui.table.setItem(row, 3, self.create_item(task["due_date"]))
             self.ui.table.setItem(row, 4, self.create_item(task["priority"]))
+
+    def add_task(self, task_data):
+        response = requests.post("http://127.0.0.1:5000/tasks", json=task_data)
+        if response.status_code == 201:
+            self.load_tasks()  # Перезагружаем список задач
 
     @staticmethod
     def create_item(text):
