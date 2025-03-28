@@ -78,7 +78,7 @@ class MainWindow(QMainWindow):
         
         task_id = self.table.item(selected_row, 0).text()
         
-        confirm = QMessageBox.question(self, "Удаление", f"Удалить задачу #{task_id}?", 
+        confirm = QMessageBox.question(self, "Удаление", f"Удалить задачу #{selected_row + 1}?", 
                                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         
         if confirm == QMessageBox.StandardButton.Yes:
