@@ -117,6 +117,17 @@ def delete_task(task_id):
 
     return jsonify({"message": "Task deleted successfully"}), 200
 
+@app.route('/tasks', methods=['DELETE'])
+def delete_all_tasks():
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM tasks")  # Удаляем все задачи из базы данных
+    db.commit()
+    
+    if cursor.rowcount == 0:
+        return jsonify({"error": "No tasks found to delete."}), 404
+    
+    return jsonify({"message": "All tasks have been deleted."}), 200
+
 
 @app.route('/')
 def home():

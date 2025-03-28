@@ -1,6 +1,7 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QWidget, QMessageBox, QAbstractItemView
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QWidget, QMessageBox, QAbstractItemView, QMenuBar
 import sys
 from frontend.controllers.task_controller import TaskController
+from PyQt6.QtGui import QAction
 
 
 class MainWindow(QMainWindow):
@@ -46,6 +47,16 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.delete_button)
         self.delete_button.clicked.connect(self.delete_task)
+        self.menu_bar = QMenuBar(self)
+        file_menu = self.menu_bar.addMenu("Файл")
+        
+        # Создаем действие "Очистить таблицу"
+        clear_action = QAction("Очистить таблицу", self)
+        clear_action.triggered.connect(self.clear_table)  # Привязываем действие к функции
+        file_menu.addAction(clear_action)
+
+        # Добавляем меню в окно
+        self.setMenuBar(self.menu_bar)
 
         central_widget.setLayout(layout)
 
@@ -83,6 +94,24 @@ class MainWindow(QMainWindow):
         
         if confirm == QMessageBox.StandardButton.Yes:
             self.controller.delete_task(task_id)
+
+    def clear_table(self):
+        """Очистить таблицу и базу данных"""
+        reply = QMessageBox.question(self, "Подтверждение", "Вы уверены, что хотите очистить таблицу?", 
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, 
+                                     QMessageBox.StandardButton.No)
+        
+        if reply == QMessageBox.StandardButton.Yes:
+            # 1. Очищаем таблицу на клиенте
+            self.controller.clear_table()
+
+            # 2. Отправляем запрос на сервер для очистки базы данных
+            response = self.controller.delete_all_tasks()
+            
+            if response.status_code == 200:
+                QMessageBox.information(self, "Очистка", "Таблица и база данных были очищены.")
+            else:
+                QMessageBox.critical(self, "Ошибка", "Не удалось очистить базу данных.")
 
 
 

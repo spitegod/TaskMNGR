@@ -54,6 +54,15 @@ class TaskController:
             self.load_tasks()  # Перезагружаем список задач
         else:
             QMessageBox.critical(self.ui, "Ошибка", "Не удалось обновить задачу.")
+
+    def delete_all_tasks(self):
+        """Удалить все задачи с сервера"""
+        response = requests.delete("http://127.0.0.1:5000/tasks")
+        return response
+
+    def clear_table(self):
+        """Очищает таблицу на клиенте"""
+        self.ui.table.setRowCount(0)  # Удаляем все строки из таблицы
   
 
     @staticmethod
